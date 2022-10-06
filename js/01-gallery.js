@@ -2,37 +2,50 @@ import { galleryItems } from './gallery-items.js';
 // Change code below this line
 
 const gallery = document.querySelector('div.gallery');
-const galleryList = document.createElement('ul');
-
-galleryList.classList.add('gallery');
 
 const arrayOfGalleryItems = galleryItems.map(elem => {
-    const galleryItem = `<li class="gallery__item"><img class="gallery__image" data-source="${elem.original}" data-url="${elem.original}" src="${elem?.preview}" alt="${elem?.description}" width="320px" height="240px"></li>`;
+    const galleryItem = `
+    <div class="gallery__item">
+        <a class="gallery__link" href="large-image.jpg">
+            <img
+                class="gallery__image"
+                src="${elem.preview}"
+                data-source="${elem.original}"
+                alt="${elem.description}"
+            />
+        </a>
+    </div>
+    `;
     return galleryItem;
 });
 
-let galleryListItems = arrayOfGalleryItems.join('');
+let galleryIemsMarkup = arrayOfGalleryItems.join('');
 
-galleryList.insertAdjacentHTML('beforeend', galleryListItems);
-gallery.append(galleryList);
+gallery.insertAdjacentHTML('beforeend', galleryIemsMarkup);
 
 gallery.addEventListener('click', onImageClick);
 
 function onImageClick(evt) {
+    evt.preventDefault();
     if (getAddrOfImage(evt) !== undefined) {
-        const instance = basicLightbox.create(`<img src="${getAddrOfImage(evt)}" width="800" height="600">`);
+        const instance = basicLightbox.create(`
+            <img src="${getAddrOfImage(evt)}" width="800" height="600">`,
+            {
+                onShow: (instance) => {
+                    document.addEventListener('keydown', closeModalOnEscape);
+                    console.log('LightBox is open. Event Listener on keydown added.');
+                },
+                onClose: (instance) => {
+                    document.removeEventListener('keydown', closeModalOnEscape);
+                    console.log('LightBox is closed. EventListener on keydown removed.')
+                },
+            }
+        );
         instance.show();
-        document.addEventListener('keydown', closeModalOnEscape);
-
         function closeModalOnEscape(evt) {
             console.log(evt.code);
-            if (!instance.visible()) {
-                document.removeEventListener('keydown', closeModalOnEscape);
-            }
-
             if (evt.code === 'Escape') {
                 instance.close();
-                document.removeEventListener('keydown', closeModalOnEscape);
             }
         }
     }
@@ -42,5 +55,5 @@ function getAddrOfImage(evt) {
     if (evt.target.nodeName !== 'IMG') {
         return;
     }
-    return evt.target.dataset.url;
+    return evt.target.dataset.source;
 }
