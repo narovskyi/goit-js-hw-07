@@ -19,9 +19,9 @@ const arrayOfGalleryItems = galleryItems.map(elem => {
     return galleryItem;
 });
 
-let galleryIemsMarkup = arrayOfGalleryItems.join('');
+let galleryItemsMarkup = arrayOfGalleryItems.join('');
 
-gallery.insertAdjacentHTML('beforeend', galleryIemsMarkup);
+gallery.insertAdjacentHTML('beforeend', galleryItemsMarkup);
 
 gallery.addEventListener('click', onImageClick);
 
